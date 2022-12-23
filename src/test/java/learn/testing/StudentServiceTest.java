@@ -13,26 +13,22 @@ import static org.mockito.Mockito.when;
 
 import learn.testing.exception.BadRequestException;
 import learn.testing.exception.StudentNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = {StudentService.class})
+
 @ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
-    private StudentService studentService;
 
-    @BeforeEach
-    void setUp() {
-        studentService = new StudentService(studentRepository);
-    }
+    @InjectMocks
+    private StudentService studentService;
 
     @Test
     void canGetAllStudents() {
