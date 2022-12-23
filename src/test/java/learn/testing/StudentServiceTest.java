@@ -3,19 +3,25 @@ package learn.testing;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import learn.testing.exception.BadRequestException;
+import learn.testing.exception.StudentNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ContextConfiguration;
 
+@ContextConfiguration(classes = {StudentService.class})
 @ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
 
@@ -24,7 +30,7 @@ class StudentServiceTest {
     private StudentService studentService;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         studentService = new StudentService(studentRepository);
     }
 
@@ -64,6 +70,35 @@ class StudentServiceTest {
         assertThat(capturedStudent).isEqualTo(student);
     }
 
+
+    @Test
+    void testDeleteStudent() {
+        // doNothing은 return이 void일 경우 사용
+        doNothing().when(studentRepository).deleteById((Long) any());
+
+        // 특정 id 값을 가진 Student가 존재 한다면 (when)
+        when(studentRepository.existsById((Long) any())).thenReturn(true);
+        // 특정 id 값을 가진 Student를 삭제한다 (when)
+        studentService.deleteStudent(123L);
+
+        // repository에서 아이디가 존재하는지 작업을 한다. (then)
+        verify(studentRepository).existsById((Long) any());
+        // repository에서 아이디를 삭제한다. (then)
+        verify(studentRepository).deleteById((Long) any());
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenDeleteDoesNotExistStudent() {
+        // 특정 id 값을 가지는 학생이 존재하지 않는다면 (when)
+        when(studentRepository.existsById((Long) any())).thenReturn(false);
+
+        // 특정 id로 삭제할 행동을 수행하는 경우, StudentNotFoundException이 발생한다. (then)
+        assertThrows(StudentNotFoundException.class, () -> studentService.deleteStudent(123L));
+        // repository에서 아이디가 존재하는지 작업을 한다. (then)
+        verify(studentRepository).existsById((Long) any());
+    }
+
     @Test
     void willThrowWhenEmailIsTaken() {
         // given
@@ -85,7 +120,5 @@ class StudentServiceTest {
         verify(studentRepository, never()).save(any());
     }
 
-    @Test
-    void deleteStudent() {
-    }
+
 }
