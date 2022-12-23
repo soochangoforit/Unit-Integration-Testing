@@ -2,8 +2,13 @@ package learn.testing;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import learn.testing.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,6 +62,27 @@ class StudentServiceTest {
 
         // 캡쳐한 결과 값이 student와 같은지 확인
         assertThat(capturedStudent).isEqualTo(student);
+    }
+
+    @Test
+    void willThrowWhenEmailIsTaken() {
+        // given
+        Student student = new Student(
+            "James",
+            "james@gmail.com",
+            Gender.FEMALE
+        );
+
+        given(studentRepository.selectExistsEmail(student.getEmail()))
+            .willReturn(true);
+
+        // when
+        // then
+        assertThatThrownBy(() -> studentService.addStudent(student))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessageContaining("Email " + student.getEmail() + " taken");
+
+        verify(studentRepository, never()).save(any());
     }
 
     @Test
