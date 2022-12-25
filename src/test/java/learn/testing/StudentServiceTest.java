@@ -116,5 +116,23 @@ class StudentServiceTest {
         verify(studentRepository, never()).save(any());
     }
 
+    @Test
+    void willNotThrowWhenEmailIsNotTaken() {
+        // given
+        Student student = new Student(
+            "James",
+            "tncsk@gmail.com",
+            Gender.FEMALE);
+
+        given(studentRepository.selectExistsEmail(student.getEmail()))
+            .willReturn(false);
+
+        // when
+        studentService.addStudent(student);
+
+        // then
+        verify(studentRepository).save(any());
+    }
+
 
 }
