@@ -16,7 +16,7 @@ public class StudentService {
       return studentRepository.findAll();
     }
 
-    public void addStudent(Student student) {
+    public Student addStudent(Student student) {
       Boolean existsEmail = studentRepository
           .selectExistsEmail(student.getEmail());
       if (existsEmail) {
@@ -24,7 +24,8 @@ public class StudentService {
             "Email " + student.getEmail() + " taken");
       }
 
-      studentRepository.save(student);
+      Student saved = studentRepository.save(student);
+      return saved;
     }
 
     public void deleteStudent(Long studentId) {
