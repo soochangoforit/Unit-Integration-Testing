@@ -1,5 +1,12 @@
 package learn.testing;
 
+import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,10 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -32,27 +41,30 @@ class StudentControllerTest {
     }
 
 
-    /**
-     * Method under test: {@link StudentController#addStudent(Student)}
-     */
+
     @Test
-    void testAddStudent2() throws Exception {
-        Student student = new Student();
-        student.setEmail("jane.doe@example.org");
-        student.setGender(Gender.MALE);
-        student.setId(123L);
-        student.setName("Name");
-        String content = (new ObjectMapper()).writeValueAsString(student);
+    void testAddStudent() throws Exception {
+        // given
+        Student student = new Student(
+          "James",
+          "asd@gmail.com", Gender.FEMALE);
 
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content);
+        doReturn(student).when(studentService).addStudent(any(Student.class));
 
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(studentController)
-            .build()
-            .perform(requestBuilder);
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/students")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(student))
+        );
 
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().isNotFound());
+        // then
+        resultActions
+            .andExpect(status().isCreated())
+            .andExpect(MockMvcResultMatchers.jsonPath("name").value("James"))
+            .andExpect(MockMvcResultMatchers.jsonPath("email").value("asd@gmail.com"))
+            .andExpect(MockMvcResultMatchers.jsonPath("gender").value(Gender.FEMALE.name()));
+
     }
 
     /**
@@ -66,7 +78,7 @@ class StudentControllerTest {
             .build()
             .perform(requestBuilder);
 
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk());
+        actualPerformResult.andExpect(status().isOk());
     }
 
 
@@ -87,7 +99,7 @@ class StudentControllerTest {
           .perform(requestBuilder);
 
       // then
-      actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk());
+      actualPerformResult.andExpect(status().isOk());
     }
 
 }
