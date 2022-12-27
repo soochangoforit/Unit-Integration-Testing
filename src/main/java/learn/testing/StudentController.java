@@ -3,6 +3,8 @@ package learn.testing;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,8 +26,9 @@ public class StudentController {
     }
 
     @PostMapping
-    public void addStudent(@Valid @RequestBody Student student) {
-        studentService.addStudent(student);
+    public ResponseEntity<Student> addStudent(@Valid @RequestBody Student student) {
+        Student saved = studentService.addStudent(student);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @DeleteMapping(path = "{studentId}")
