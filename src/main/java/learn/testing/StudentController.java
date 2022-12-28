@@ -21,8 +21,8 @@ public class StudentController {
     private final StudentService studentService;
 
     @GetMapping
-    public List<Student> getAllStudents() {
-        return studentService.getAllStudents();
+    public ResponseEntity<List<Student>> getAllStudents() {
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents());
     }
 
     @PostMapping
