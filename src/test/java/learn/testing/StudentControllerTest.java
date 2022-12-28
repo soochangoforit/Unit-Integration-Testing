@@ -1,44 +1,32 @@
 package learn.testing;
 
-import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(StudentController.class)
 class StudentControllerTest {
-    @InjectMocks
-    private StudentController studentController;
 
-    @Mock
+    @MockBean
     private StudentService studentService;
 
+    @Autowired
     private MockMvc mockMvc;
-
-    @BeforeEach
-    public void init(){
-        mockMvc = MockMvcBuilders.standaloneSetup(studentController).build();
-    }
 
 
 
@@ -67,18 +55,34 @@ class StudentControllerTest {
 
     }
 
-    /**
-     * Method under test: {@link StudentController#getAllStudents()}
-     */
+
     @Test
     void testGetAllStudents() throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/v1/students");
+        // given
+        doReturn(getStudents()).when(studentService).getAllStudents();
 
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(this.studentController)
-            .build()
-            .perform(requestBuilder);
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/v1/students")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
 
-        actualPerformResult.andExpect(status().isOk());
+        // then
+        resultActions
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private List<Student> getStudents() {
+        List<Student> students = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            students.add(new Student(
+                "James" + i,
+                "james" + i + "@gmail.com",Gender.FEMALE));
+        }
+
+        return students;
     }
 
 
@@ -94,7 +98,7 @@ class StudentControllerTest {
           MockMvcRequestBuilders.delete("/api/v1/students/{studentId}", 1L);
 
       // when
-      ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(this.studentController)
+      ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(new StudentController(studentService))
           .build()
           .perform(requestBuilder);
 
