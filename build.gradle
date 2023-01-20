@@ -53,9 +53,7 @@ jacoco {
 
 tasks.named('test') {
 
-	jacoco {
-		destinationFile = file("$buildDir/jacoco/jacoco.exec")
-	}
+
 
 	useJUnitPlatform() // JUnit5를 사용하기 위한 설정
 	finalizedBy 'jacocoTestReport' // Test 이후 커버리지가 동작하도록 finalizedBy 추가
