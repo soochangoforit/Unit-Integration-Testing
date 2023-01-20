@@ -2,11 +2,16 @@ package learn.testing;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.catalina.User;
+import org.apache.catalina.realm.UserDatabaseRealm;
+import org.apache.catalina.users.MemoryUserDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,102 +32,144 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @WebMvcTest(StudentController.class)
 class StudentControllerTest {
 
-    @Autowired
+  @Autowired
   private StudentController studentController;
 
   @MockBean
   private StudentService studentService;
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
 
-    @Test
-    void testAddStudent() throws Exception {
-        // given
-        Student student = new Student(
-            "James",
-            "asd@gmail.com", Gender.FEMALE);
+  @Test
+  void testAddStudent() throws Exception {
+    // given
+    Student student = new Student(
+        "James",
+        "asd@gmail.com", Gender.FEMALE);
 
-        doReturn(student).when(studentService).addStudent(any(Student.class));
+    doReturn(student).when(studentService).addStudent(any(Student.class));
 
-        // when
-        ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/students")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(student))
-        );
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        MockMvcRequestBuilders.post("/api/v1/students")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(student))
+    );
 
-        // then
-        resultActions
-            .andExpect(status().isCreated())
-            .andExpect(MockMvcResultMatchers.jsonPath("name").value("James"))
-            .andExpect(MockMvcResultMatchers.jsonPath("email").value("asd@gmail.com"))
-            .andExpect(MockMvcResultMatchers.jsonPath("gender").value(Gender.FEMALE.name()));
+    // then
+    resultActions
+        .andExpect(status().isCreated())
+        .andExpect(MockMvcResultMatchers.jsonPath("name").value("James"))
+        .andExpect(MockMvcResultMatchers.jsonPath("email").value("asd@gmail.com"))
+        .andExpect(MockMvcResultMatchers.jsonPath("gender").value(Gender.FEMALE.name()));
 
+  }
+
+  /**
+   * Method under test: {@link StudentController#addStudent(Student)}
+   */
+  @Test
+  void testAddStudent2() throws Exception {
+    MockHttpServletRequestBuilder contentTypeResult = MockMvcRequestBuilders.get("/")
+        .contentType(MediaType.APPLICATION_JSON);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    MockHttpServletRequestBuilder requestBuilder = contentTypeResult
+        .content(objectMapper.writeValueAsString(new Student()));
+    ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(studentController)
+        .build()
+        .perform(requestBuilder);
+    actualPerformResult.andExpect(MockMvcResultMatchers.status().isNotFound());
+  }
+
+  /**
+   * Method under test: {@link StudentController#addStudent(Student)}
+   */
+  @Test
+  void testAddStudent3() throws Exception {
+    User user = mock(User.class);
+    when(user.getName()).thenReturn("Name");
+    UserDatabaseRealm.UserDatabasePrincipal principal =
+        new UserDatabaseRealm.UserDatabasePrincipal(user,
+            new MemoryUserDatabase());
+
+    MockHttpServletRequestBuilder getResult = MockMvcRequestBuilders.get("/");
+    getResult.principal(principal);
+    MockHttpServletRequestBuilder contentTypeResult =
+        getResult.contentType(MediaType.APPLICATION_JSON);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    MockHttpServletRequestBuilder requestBuilder = contentTypeResult
+        .content(objectMapper.writeValueAsString(new Student()));
+    ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(studentController)
+        .build()
+        .perform(requestBuilder);
+    actualPerformResult.andExpect(MockMvcResultMatchers.status().isNotFound());
+  }
+
+
+  @Test
+  void testGetAllStudents() throws Exception {
+    // given
+    doReturn(getStudents()).when(studentService).getAllStudents();
+
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        MockMvcRequestBuilders.get("/api/v1/students")
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+    // then
+    resultActions
+        .andExpect(status().isOk())
+        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  private List<Student> getStudents() {
+    List<Student> students = new ArrayList<>();
+
+    for (int i = 0; i < 10; i++) {
+      students.add(new Student(
+          "James" + i,
+          "james" + i + "@gmail.com", Gender.FEMALE));
     }
 
-
-    @Test
-    void testGetAllStudents() throws Exception {
-        // given
-        doReturn(getStudents()).when(studentService).getAllStudents();
-
-        // when
-        ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/students")
-                .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        // then
-        resultActions
-            .andExpect(status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
-    }
-
-    private List<Student> getStudents() {
-        List<Student> students = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            students.add(new Student(
-                "James" + i,
-                "james" + i + "@gmail.com", Gender.FEMALE));
-        }
-
-        return students;
-    }
+    return students;
+  }
 
 
-    /**
-     * Method under test: {@link StudentController#deleteStudent(Long)}
-     */
-    @Test
-    void testDeleteStudent() throws Exception {
-        // given
-        MockHttpServletRequestBuilder requestBuilder =
-            MockMvcRequestBuilders.delete("/api/v1/students/{studentId}", 1L);
+  /**
+   * Method under test: {@link StudentController#deleteStudent(Long)}
+   */
+  @Test
+  void testDeleteStudent() throws Exception {
+    // given
+    MockHttpServletRequestBuilder requestBuilder =
+        MockMvcRequestBuilders.delete("/api/v1/students/{studentId}", 1L);
 
-        // when
-        ResultActions actualPerformResult =
-            MockMvcBuilders.standaloneSetup(new StudentController(studentService))
-                .build()
-                .perform(requestBuilder);
-
-        // then
-        actualPerformResult.andExpect(status().isOk());
-    }
-
-    /**
-     * Method under test: {@link StudentController#getAllStudents()}
-     */
-    @Test
-    void testGetAllStudents2() throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/");
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(studentController)
+    // when
+    ResultActions actualPerformResult =
+        MockMvcBuilders.standaloneSetup(new StudentController(studentService))
             .build()
             .perform(requestBuilder);
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
+
+    // then
+    actualPerformResult.andExpect(status().isOk());
+  }
+
+  /**
+   * Method under test: {@link StudentController#getAllStudents()}
+   */
+  @Test
+  void testGetAllStudents2() throws Exception {
+    MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/");
+    ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(studentController)
+        .build()
+        .perform(requestBuilder);
+    actualPerformResult.andExpect(MockMvcResultMatchers.status().isNotFound());
+  }
 
 }
 
