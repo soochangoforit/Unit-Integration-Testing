@@ -17,15 +17,14 @@ public class StudentService {
     }
 
     public Student addStudent(Student student) {
-      Boolean existsEmail = studentRepository
+      boolean existsEmail = studentRepository
           .selectExistsEmail(student.getEmail());
       if (existsEmail) {
         throw new BadRequestException(
             "Email " + student.getEmail() + " taken");
       }
 
-      Student saved = studentRepository.save(student);
-      return saved;
+      return studentRepository.save(student);
     }
 
     public void deleteStudent(Long studentId) {
