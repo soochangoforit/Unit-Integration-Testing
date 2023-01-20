@@ -32,8 +32,8 @@ class StudentTest {
 
     @Test
     void testGetFirstEmail2() {
-      assertEquals("jane.doe",
-          (new Student("@", "jane.doe@example.org", Gender.MALE)).getFirstEmail());
+      assertEquals("jane.doea",
+          (new Student("@", "jane.doea@example.org", Gender.MALE)).getFirstEmail());
     }
 
 }
