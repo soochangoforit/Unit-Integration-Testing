@@ -151,13 +151,11 @@ jacocoTestCoverageVerification { // 커버리지 기준값 상세설정
 
 
 //sonarCloud
-sonar {
+sonarqube {
 	properties {
 		property "sonar.projectKey", "soochangoforit_Unit-Integration-Testing"
 		property "sonar.organization", "soochangoforit"
 		property "sonar.host.url", "https://sonarcloud.io"
-
-		// jacoco coverage report instead of sonarCloud
 		property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/test/jacocoTestReport.xml'
 	}
 }
