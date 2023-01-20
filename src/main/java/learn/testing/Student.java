@@ -41,6 +41,9 @@ public class Student {
     @Column(nullable = false)
     private Gender gender;
 
+    /**
+     * 생성자
+     */
     public Student(String name, String email, Gender gender) {
       this.name = name;
       this.email = email;
