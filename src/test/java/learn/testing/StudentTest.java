@@ -16,5 +16,16 @@ class StudentTest {
     assertNull(actualStudent.getId());
     assertEquals(Gender.MALE, actualStudent.getGender());
   }
+
+  /**
+   * Method under test: {@link Student#updateStudent(String, String)}
+   */
+  @Test
+  void testUpdateStudent() {
+    Student student = new Student();
+    student.updateStudent("Name", "jane.doe@example.org");
+    assertEquals("jane.doe@example.org", student.getEmail());
+    assertEquals("Name", student.getName());
+  }
 }
 
