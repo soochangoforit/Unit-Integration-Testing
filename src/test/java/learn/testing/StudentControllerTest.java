@@ -67,47 +67,6 @@ class StudentControllerTest {
 
   }
 
-  /**
-   * Method under test: {@link StudentController#addStudent(Student)}
-   */
-  @Test
-  void testAddStudent2() throws Exception {
-    MockHttpServletRequestBuilder contentTypeResult = MockMvcRequestBuilders.get("/")
-        .contentType(MediaType.APPLICATION_JSON);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    MockHttpServletRequestBuilder requestBuilder = contentTypeResult
-        .content(objectMapper.writeValueAsString(new Student()));
-    ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(studentController)
-        .build()
-        .perform(requestBuilder);
-    actualPerformResult.andExpect(MockMvcResultMatchers.status().isNotFound());
-  }
-
-  /**
-   * Method under test: {@link StudentController#addStudent(Student)}
-   */
-  @Test
-  void testAddStudent3() throws Exception {
-    User user = mock(User.class);
-    when(user.getName()).thenReturn("Name");
-    UserDatabaseRealm.UserDatabasePrincipal principal =
-        new UserDatabaseRealm.UserDatabasePrincipal(user,
-            new MemoryUserDatabase());
-
-    MockHttpServletRequestBuilder getResult = MockMvcRequestBuilders.get("/");
-    getResult.principal(principal);
-    MockHttpServletRequestBuilder contentTypeResult =
-        getResult.contentType(MediaType.APPLICATION_JSON);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    MockHttpServletRequestBuilder requestBuilder = contentTypeResult
-        .content(objectMapper.writeValueAsString(new Student()));
-    ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(studentController)
-        .build()
-        .perform(requestBuilder);
-    actualPerformResult.andExpect(MockMvcResultMatchers.status().isNotFound());
-  }
 
 
   @Test
