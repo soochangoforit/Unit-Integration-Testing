@@ -49,4 +49,12 @@ public class Student {
       this.email = email;
       this.gender = gender;
     }
+
+    /**
+     * 수정자
+     */
+    public void updateStudent(String name, String email) {
+      this.name = name;
+      this.email = email;
+    }
 }
