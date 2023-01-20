@@ -12,19 +12,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
-@ToString
 @Getter
-@Setter
-@EqualsAndHashCode
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table
 public class Student {
