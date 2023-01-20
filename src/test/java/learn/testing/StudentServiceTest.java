@@ -99,7 +99,7 @@ class StudentServiceTest {
     void willThrowWhenEmailIsTaken() {
         // given
         Student student = new Student(
-            "James",
+            "Jameds",
             "james@gmail.com",
             Gender.FEMALE
         );
