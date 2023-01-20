@@ -3,6 +3,7 @@ package learn.testing;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class StudentTest {
@@ -27,5 +28,13 @@ class StudentTest {
     assertEquals("jane.doe@example.org", student.getEmail());
     assertEquals("Name", student.getName());
   }
+
+
+    @Test
+    void testGetFirstEmail2() {
+      assertEquals("jane.doe",
+          (new Student("@", "jane.doe@example.org", Gender.MALE)).getFirstEmail());
+    }
+
 }
 
