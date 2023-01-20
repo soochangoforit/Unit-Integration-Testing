@@ -4,6 +4,8 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	// jacoco 추가
 	id 'jacoco'
+	//sonarCloud
+	id "org.sonarqube" version "3.5.0.2730"
 }
 
 group = 'learn'
@@ -65,9 +67,9 @@ tasks.named('test') {
 
 jacocoTestReport {
 	reports {
-		html.enabled true
-		csv.enabled true
-		xml.enabled false
+		html.enabled false
+		csv.enabled false
+		xml.enabled true
 	}
 
 	// query dsl q type 제외
@@ -147,3 +149,15 @@ jacocoTestCoverageVerification { // 커버리지 기준값 상세설정
 	}
 }
 
+
+//sonarCloud
+sonar {
+	properties {
+		property "sonar.projectKey", "soochangoforit_Unit-Integration-Testing"
+		property "sonar.organization", "soochangoforit"
+		property "sonar.host.url", "https://sonarcloud.io"
+
+		// jacoco coverage report instead of sonarCloud
+		property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/test/jacocoTestReport.xml'
+	}
+}
