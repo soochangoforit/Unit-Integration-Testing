@@ -30,60 +30,60 @@ class StudentControllerTest {
 
 
 
-//    @Test
-//    void testAddStudent() throws Exception {
-//        // given
-//        Student student = new Student(
-//          "James",
-//          "asd@gmail.com", Gender.FEMALE);
-//
-//        doReturn(student).when(studentService).addStudent(any(Student.class));
-//
-//        // when
-//        ResultActions resultActions = mockMvc.perform(
-//            MockMvcRequestBuilders.post("/api/v1/students")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(new ObjectMapper().writeValueAsString(student))
-//        );
-//
-//        // then
-//        resultActions
-//            .andExpect(status().isCreated())
-//            .andExpect(MockMvcResultMatchers.jsonPath("name").value("James"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("email").value("asd@gmail.com"))
-//            .andExpect(MockMvcResultMatchers.jsonPath("gender").value(Gender.FEMALE.name()));
-//
-//    }
+    @Test
+    void testAddStudent() throws Exception {
+        // given
+        Student student = new Student(
+          "James",
+          "asd@gmail.com", Gender.FEMALE);
+
+        doReturn(student).when(studentService).addStudent(any(Student.class));
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/students")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(student))
+        );
+
+        // then
+        resultActions
+            .andExpect(status().isCreated())
+            .andExpect(MockMvcResultMatchers.jsonPath("name").value("James"))
+            .andExpect(MockMvcResultMatchers.jsonPath("email").value("asd@gmail.com"))
+            .andExpect(MockMvcResultMatchers.jsonPath("gender").value(Gender.FEMALE.name()));
+
+    }
 
 
-//    @Test
-//    void testGetAllStudents() throws Exception {
-//        // given
-//        doReturn(getStudents()).when(studentService).getAllStudents();
-//
-//        // when
-//        ResultActions resultActions = mockMvc.perform(
-//            MockMvcRequestBuilders.get("/api/v1/students")
-//                .contentType(MediaType.APPLICATION_JSON)
-//        );
-//
-//        // then
-//        resultActions
-//            .andExpect(status().isOk())
-//            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
-//    }
+    @Test
+    void testGetAllStudents() throws Exception {
+        // given
+        doReturn(getStudents()).when(studentService).getAllStudents();
 
-//    private List<Student> getStudents() {
-//        List<Student> students = new ArrayList<>();
-//
-//        for (int i = 0; i < 10; i++) {
-//            students.add(new Student(
-//                "James" + i,
-//                "james" + i + "@gmail.com",Gender.FEMALE));
-//        }
-//
-//        return students;
-//    }
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/v1/students")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private List<Student> getStudents() {
+        List<Student> students = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            students.add(new Student(
+                "James" + i,
+                "james" + i + "@gmail.com",Gender.FEMALE));
+        }
+
+        return students;
+    }
 
 
 
