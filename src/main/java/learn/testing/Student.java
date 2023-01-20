@@ -57,4 +57,11 @@ public class Student {
       this.name = name;
       this.email = email;
     }
+
+    /**
+     * 이메일 앞부분 추출 @
+     */
+    public String getFirstEmail() {
+        return email.split("@")[0];
+    }
 }
