@@ -8,10 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -19,23 +22,27 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+@ContextConfiguration(classes = {StudentController.class})
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(StudentController.class)
 class StudentControllerTest {
 
-    @MockBean
-    private StudentService studentService;
+    @Autowired
+  private StudentController studentController;
+
+  @MockBean
+  private StudentService studentService;
 
     @Autowired
     private MockMvc mockMvc;
-
 
 
     @Test
     void testAddStudent() throws Exception {
         // given
         Student student = new Student(
-          "James",
-          "asd@gmail.com", Gender.FEMALE);
+            "James",
+            "asd@gmail.com", Gender.FEMALE);
 
         doReturn(student).when(studentService).addStudent(any(Student.class));
 
@@ -79,13 +86,11 @@ class StudentControllerTest {
         for (int i = 0; i < 10; i++) {
             students.add(new Student(
                 "James" + i,
-                "james" + i + "@gmail.com",Gender.FEMALE));
+                "james" + i + "@gmail.com", Gender.FEMALE));
         }
 
         return students;
     }
-
-
 
 
     /**
@@ -93,17 +98,30 @@ class StudentControllerTest {
      */
     @Test
     void testDeleteStudent() throws Exception {
-      // given
-      MockHttpServletRequestBuilder requestBuilder =
-          MockMvcRequestBuilders.delete("/api/v1/students/{studentId}", 1L);
+        // given
+        MockHttpServletRequestBuilder requestBuilder =
+            MockMvcRequestBuilders.delete("/api/v1/students/{studentId}", 1L);
 
-      // when
-      ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(new StudentController(studentService))
-          .build()
-          .perform(requestBuilder);
+        // when
+        ResultActions actualPerformResult =
+            MockMvcBuilders.standaloneSetup(new StudentController(studentService))
+                .build()
+                .perform(requestBuilder);
 
-      // then
-      actualPerformResult.andExpect(status().isOk());
+        // then
+        actualPerformResult.andExpect(status().isOk());
+    }
+
+    /**
+     * Method under test: {@link StudentController#getAllStudents()}
+     */
+    @Test
+    void testGetAllStudents2() throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/");
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(studentController)
+            .build()
+            .perform(requestBuilder);
+        actualPerformResult.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
 }
