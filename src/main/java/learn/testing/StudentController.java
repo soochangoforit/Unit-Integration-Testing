@@ -13,26 +13,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * java doc 입니다.
+ */
 @RestController
 @RequestMapping(path = "api/v1/students")
 @AllArgsConstructor
 public class StudentController {
 
-    private final StudentService studentService;
 
-    @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
-        return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents());
-    }
+  private final StudentService studentService;
 
-    @PostMapping
-    public ResponseEntity<Student> addStudent(@Valid @RequestBody Student student) {
-        Student saved = studentService.addStudent(student);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-    }
+  @GetMapping
+  public ResponseEntity<List<Student>> getAllStudents() {
+    return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents());
+  }
 
-    @DeleteMapping(path = "{studentId}")
-    public void deleteStudent(@PathVariable("studentId") Long studentId) {
-        studentService.deleteStudent(studentId);
-    }
+  @PostMapping
+  public ResponseEntity<Student> addStudent(@Valid @RequestBody Student student) {
+    Student saved = studentService.addStudent(student);
+    return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+  }
+
+  @DeleteMapping(path = "{studentId}")
+  public void deleteStudent(@PathVariable("studentId") Long studentId) {
+    studentService.deleteStudent(studentId);
+  }
+
+
 }
