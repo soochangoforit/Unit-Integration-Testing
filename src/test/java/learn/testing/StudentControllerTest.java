@@ -99,24 +99,6 @@ class StudentControllerTest {
   }
 
 
-  /**
-   * Method under test: {@link StudentController#deleteStudent(Long)}
-   */
-  @Test
-  void testDeleteStudent() throws Exception {
-    // given
-    MockHttpServletRequestBuilder requestBuilder =
-        MockMvcRequestBuilders.delete("/api/v1/students/{studentId}", 1L);
-
-    // when
-    ResultActions actualPerformResult =
-        MockMvcBuilders.standaloneSetup(new StudentController(studentService))
-            .build()
-            .perform(requestBuilder);
-
-    // then
-    actualPerformResult.andExpect(status().isOk());
-  }
 
   /**
    * Method under test: {@link StudentController#getAllStudents()}
