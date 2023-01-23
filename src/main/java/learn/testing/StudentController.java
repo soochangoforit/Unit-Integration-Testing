@@ -23,6 +23,7 @@ public class StudentController {
 
 
   private final StudentService studentService;
+
   private final StudentRepository studentRepository;
 
   @GetMapping
@@ -42,8 +43,9 @@ public class StudentController {
   }
 
   @GetMapping("/{email}")
-  public ResponseEntity<Student> getStudent(@PathVariable("email") String email) {
-    return ResponseEntity.status(HttpStatus.OK).body(studentRepository.findStudentByEmail(email));
+  public ResponseEntity<Student> getStudentByEmail(@PathVariable("email") String email) {
+    Student student = studentRepository.findStudentByEmail(email);
+    return ResponseEntity.status(HttpStatus.OK).body(student);
   }
 
 

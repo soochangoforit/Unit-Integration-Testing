@@ -60,7 +60,4 @@ public class Student {
   }
 
 
-  public String getFirstEmail() {
-    return email.split("@")[0];
-  }
 }
