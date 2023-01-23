@@ -23,6 +23,7 @@ public class StudentController {
 
 
   private final StudentService studentService;
+  private final StudentRepository studentRepository;
 
   @GetMapping
   public ResponseEntity<List<Student>> getAllStudents() {
@@ -38,6 +39,11 @@ public class StudentController {
   @DeleteMapping(path = "{studentId}")
   public void deleteStudent(@PathVariable("studentId") Long studentId) {
     studentService.deleteStudent(studentId);
+  }
+
+  @GetMapping("/{email}")
+  public ResponseEntity<Student> getStudent(@PathVariable("email") String email) {
+    return ResponseEntity.status(HttpStatus.OK).body(studentRepository.findStudentByEmail(email));
   }
 
 

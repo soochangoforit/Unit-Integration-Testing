@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
  * asd.
  */
 @Repository
-public interface StudentRepository extends JpaRepository<Student, Long> {
+public interface StudentRepository extends JpaRepository<Student, Long>, StudentRepositoryCustom {
 
   @Query(""
       + "SELECT CASE WHEN COUNT(s) > 0 THEN "
@@ -21,10 +21,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
 
   Optional<Student> findByNameAndEmail(String name, String email);
-
-
-
-
 
 
 }
