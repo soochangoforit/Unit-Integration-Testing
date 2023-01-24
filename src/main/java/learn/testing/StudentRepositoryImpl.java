@@ -5,6 +5,7 @@ import static learn.testing.QStudent.student;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 
+import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -12,11 +13,14 @@ import org.springframework.stereotype.Repository;
 /**
  * querydsl을 사용하여 동적쿼리를 구현하는 클래스.
  */
-@Repository
-@RequiredArgsConstructor
+
 public class StudentRepositoryImpl implements StudentRepositoryCustom {
 
   private final JPAQueryFactory queryFactory;
+
+  public StudentRepositoryImpl(EntityManager em) {
+    this.queryFactory = new JPAQueryFactory(em);
+  }
 
 
   @Override
