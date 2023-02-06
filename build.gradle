@@ -54,7 +54,7 @@ dependencies {
 
 
 	// aws parameter store
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config'
+	implementation 'io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config:2.3.5'
 
 	//querydsl 추가
 	implementation "com.querydsl:querydsl-jpa:5.0.0"
@@ -90,11 +90,11 @@ configurations {
 
 
 // aws parameter store
-dependencyManagement {
-	imports {
-		mavenBom 'io.awspring.cloud:spring-cloud-aws-dependencies:2.3.3'
-	}
-}
+//dependencyManagement {
+//	imports {
+//		mavenBom 'io.awspring.cloud:spring-cloud-aws-dependencies'
+//	}
+//}
 
 //Querydsl 추가, 자동 생성된 Q클래스 gradle clean으로 제거
 clean {
