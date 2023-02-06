@@ -1,16 +1,16 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.7'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	// jacoco 추가
-	id 'jacoco'
+    id 'java'
+    id 'org.springframework.boot' version '2.7.7'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    // jacoco 추가
+    id 'jacoco'
 
-	//sonarCloud
-	id "org.sonarqube" version "3.5.0.2730"
+    //sonarCloud
+    id "org.sonarqube" version "3.5.0.2730"
 
 
-	//querydsl 추가
-	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+    //querydsl 추가
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'learn'
@@ -18,51 +18,45 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 
-
-
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.h2database:h2'
 
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
-	// mariadb
-	implementation 'org.mariadb.jdbc:mariadb-java-client'
-
-
-
-	// add validation
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // mariadb
+    implementation 'org.mariadb.jdbc:mariadb-java-client'
 
 
-	// aws parameter store
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config:2.3.5'
-
-	//querydsl 추가
-	implementation "com.querydsl:querydsl-jpa:5.0.0"
-	implementation "com.querydsl:querydsl-apt:5.0.0"
+    // add validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 
+    // aws parameter store
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config'
 
 
+    //querydsl 추가
+    implementation "com.querydsl:querydsl-jpa:5.0.0"
+    implementation "com.querydsl:querydsl-apt:5.0.0"
 
 
 }
@@ -71,148 +65,144 @@ dependencies {
 def querydslDir = "$buildDir/generated/querydsl"
 
 querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
+    jpa = true
+    querydslSourcesDir = querydslDir
 }
 sourceSets {
-	main.java.srcDir querydslDir
+    main.java.srcDir querydslDir
 }
 compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
+    options.annotationProcessorPath = configurations.querydsl
 }
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-	querydsl.extendsFrom compileClasspath
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
 }
-
 
 
 // aws parameter store
-//dependencyManagement {
-//	imports {
-//		mavenBom 'io.awspring.cloud:spring-cloud-aws-dependencies'
-//	}
-//}
+dependencyManagement {
+    imports {
+        mavenBom 'io.awspring.cloud:spring-cloud-aws-dependencies:2.3.5'
+    }
+}
 
 //Querydsl 추가, 자동 생성된 Q클래스 gradle clean으로 제거
 clean {
-	delete file('src/main/generated')
+    delete file('src/main/generated')
 }
 
 // Jacoco 설정 추가 시작
 jacoco {
-	// JaCoCo 버전
-	toolVersion = '0.8.6'
+    // JaCoCo 버전
+    toolVersion = '0.8.6'
 }
 
 
 tasks.named('test') {
 
 
-
-	useJUnitPlatform() // JUnit5를 사용하기 위한 설정
-	finalizedBy 'jacocoTestReport' // Test 이후 커버리지가 동작하도록 finalizedBy 추가
+    useJUnitPlatform() // JUnit5를 사용하기 위한 설정
+    finalizedBy 'jacocoTestReport' // Test 이후 커버리지가 동작하도록 finalizedBy 추가
 
 }
 
 
-
-
 jacocoTestReport {
-	reports {
-		html.enabled false
-		csv.enabled false
-		xml.enabled true
-	}
+    reports {
+        html.enabled false
+        csv.enabled false
+        xml.enabled true
+    }
 
-	// query dsl q type 제외
-	def Qdomains = []
-	def excludedClass = [
-			'**/*Application*',
-			'**/*Controller*',
-			'**/*Impl*',
-			'**/*Request*',
-			'**/*Response*',
-			'**/*Exception*'
-	]
-	for (qPattern in '**/QA'..'**/QZ') { // qPattern = '**/QA', '**/QB', ... '*.QZ'
-		Qdomains.add(qPattern + '*')
-	}
-	afterEvaluate {
-		classDirectories.setFrom(
-				files(classDirectories.files.collect {
-					fileTree(dir: it, excludes:  excludedClass + Qdomains)
-				})
-		)
-	}
-	// query dsl q type 제외 끝
+    // query dsl q type 제외
+    def Qdomains = []
+    def excludedClass = [
+            '**/*Application*',
+            '**/*Controller*',
+            '**/*Impl*',
+            '**/*Request*',
+            '**/*Response*',
+            '**/*Exception*'
+    ]
+    for (qPattern in '**/QA'..'**/QZ') { // qPattern = '**/QA', '**/QB', ... '*.QZ'
+        Qdomains.add(qPattern + '*')
+    }
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: excludedClass + Qdomains)
+                })
+        )
+    }
+    // query dsl q type 제외 끝
 
-	// 커버리지 이후 평가
-	finalizedBy 'jacocoTestCoverageVerification'
+    // 커버리지 이후 평가
+    finalizedBy 'jacocoTestCoverageVerification'
 }
 
 jacocoTestCoverageVerification { // 커버리지 기준값 상세설정
 
-	// query dsl q type 제외
-	def Qdomains = []
-	def excludedClass = [
-			'**.*Application*',
-			'**.*Controller*',
-			'**.*Impl*',
-			'**.*Request*',
-			'**.*Response*',
-			'**.*Exception*'
-	]
-	for (qPattern in '*.QA'..'*.QZ') { // qPattern = '*.QA', '*.QB', ... '*.QZ'
-		Qdomains.add(qPattern + '*')
-	}
+    // query dsl q type 제외
+    def Qdomains = []
+    def excludedClass = [
+            '**.*Application*',
+            '**.*Controller*',
+            '**.*Impl*',
+            '**.*Request*',
+            '**.*Response*',
+            '**.*Exception*'
+    ]
+    for (qPattern in '*.QA'..'*.QZ') { // qPattern = '*.QA', '*.QB', ... '*.QZ'
+        Qdomains.add(qPattern + '*')
+    }
 
-	violationRules {
-		rule {
-			enabled = true
+    violationRules {
+        rule {
+            enabled = true
 
-			element = 'CLASS'
-
-
-			// 브랜치(if-else) 커버리지를 최소한 50% 만족시켜야 합니다.
-			limit {
-				counter = 'BRANCH'
-				value = 'COVEREDRATIO'
-				minimum = 0.5
-			}
+            element = 'CLASS'
 
 
-			// 라인 커버리지를 최소한 50% 만족시켜야 합니다.
-			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.5
-			}
-
-			// 빈 줄을 제외한 코드의 라인수를 최대 200라인으로 제한합니다.
-			limit {
-				counter = 'LINE'
-				value = 'TOTALCOUNT'
-				maximum = 200
-			}
-
-			// 커버리지 체크를 제외할 클래스들 (query dsl 제외)
-			excludes = excludedClass + Qdomains
-		} // end 1 rule
+            // 브랜치(if-else) 커버리지를 최소한 50% 만족시켜야 합니다.
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.5
+            }
 
 
-	}
+            // 라인 커버리지를 최소한 50% 만족시켜야 합니다.
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.5
+            }
+
+            // 빈 줄을 제외한 코드의 라인수를 최대 200라인으로 제한합니다.
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 200
+            }
+
+            // 커버리지 체크를 제외할 클래스들 (query dsl 제외)
+            excludes = excludedClass + Qdomains
+        } // end 1 rule
+
+
+    }
 }
 
 
 //sonarCloud
 sonarqube {
-	properties {
-		property "sonar.projectKey", "soochangoforit_Unit-Integration-Testing"
-		property "sonar.organization", "soochangoforit"
-		property "sonar.host.url", "https://sonarcloud.io"
-		property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/test/jacocoTestReport.xml'
-	}
+    properties {
+        property "sonar.projectKey", "soochangoforit_Unit-Integration-Testing"
+        property "sonar.organization", "soochangoforit"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/test/jacocoTestReport.xml'
+    }
 }
